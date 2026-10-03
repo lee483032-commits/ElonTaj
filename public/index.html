@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#16a34a">
+<title>Elon Taj</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+:root{--g:#16a34a;--gd:#15803d}
+body{background:#f5f5f5;color:#222;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+button{cursor:pointer;font-size:inherit}
+
+.header{background:#fff;padding:15px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #00000012}
+.logo{font-size:25px;font-weight:bold;margin-bottom:12px;cursor:pointer;width:max-content}
+.logo span{color:var(--g)}
+.search{display:flex;background:#f1f1f1;border-radius:12px;padding:0 12px;align-items:center}
+.search input{width:100%;border:0;outline:0;background:transparent;padding:13px 8px;font-size:16px}
+
+.container{max-width:700px;margin:auto;padding:15px}
+.title{font-size:21px;font-weight:bold;margin:10px 0 15px}
+.categories{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px}
+.category{color:inherit;min-width:90px;background:#fff;border:2px solid transparent;border-radius:14px;padding:12px 7px;text-align:center;box-shadow:0 2px 7px #00000010}
+.category.active{border-color:var(--g);color:var(--gd)}
+.category .icon{font-size:27px;margin-bottom:5px}
+.category small{font-size:12px}
+
+.ads{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 2px 8px #00000012;position:relative;cursor:pointer}
+.card img,.noimg{width:100%;height:150px;object-fit:cover;background:#e5e7eb;display:block}
+.noimg{display:flex;align-items:center;justify-content:center;font-size:46px}
+.card-info{padding:10px}
+.card-title{font-size:15px;font-weight:bold;margin-bottom:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.price{font-size:17px;font-weight:bold;color:#111}
+.location{color:#777;font-size:12px;margin-top:6px}
+.heart{position:absolute;top:8px;right:8px;background:#fff;border-radius:50%;width:35px;height:35px;border:0;font-size:19px;box-shadow:0 1px 5px #0003}
+
+.add-btn{position:fixed;right:20px;bottom:calc(82px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:0;background:var(--g);color:#fff;font-size:30px;box-shadow:0 5px 20px #0003;z-index:20}
+.bottom{position:fixed;bottom:0;left:0;right:0;height:calc(65px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;display:flex;justify-content:space-around;align-items:center;box-shadow:0 -2px 10px #00000015;z-index:15}
+.nav{text-align:center;color:#777;font-size:11px;background:none;border:0;padding:6px 10px}
+.nav div{font-size:22px;margin-bottom:3px}
+.nav.active{color:var(--g)}
+
+.modal{display:none;position:fixed;inset:0;background:#0008;z-index:50;align-items:flex-end}
+.modal.open{display:flex}
+.modal-box{background:#fff;width:100%;max-width:700px;margin:auto;border-radius:22px 22px 0 0;padding:20px;max-height:92vh;overflow:auto}
+.modal-box h2{margin-bottom:12px}
+.close{float:right;border:0;background:#eee;border-radius:50%;width:35px;height:35px;font-size:20px}
+.note{background:#ecfdf5;color:var(--gd);padding:10px 12px;border-radius:10px;margin-bottom:12px;font-size:14px}
+.form{display:flex;flex-direction:column;gap:12px}
+.form input,.form select,.form textarea{width:100%;padding:13px;border:1px solid #ddd;border-radius:10px;outline:none;font-size:16px;background:#fff}
+.form input:focus,.form select:focus,.form textarea:focus{border-color:var(--g)}
+.form textarea{min-height:90px;resize:vertical}
+.submit,.btn{border:0;background:var(--g);color:#fff;padding:14px;border-radius:11px;font-size:16px;font-weight:bold;text-align:center;text-decoration:none;display:block;width:100%}
+.btn{display:inline-block;width:auto;padding:11px 20px}
+.btn.alt{background:#e5e7eb;color:#222}
+.btn.danger{background:#dc2626}
+.submit:disabled,.btn:disabled{opacity:.6}
+.link{background:none;border:0;color:var(--g);font-weight:bold;padding:0}
+.switch{text-align:center;margin-top:14px;font-size:14px;color:#555}
+.preview{max-height:180px;border-radius:10px;object-fit:cover;width:100%;display:none}
+
+.detail-img{width:100%;max-height:340px;object-fit:cover;border-radius:14px;margin:8px 0 12px;display:block;background:#e5e7eb}
+.detail-img.noimg{height:200px}
+.detail .price{font-size:24px;margin:4px 0 8px}
+.meta{color:#666;font-size:14px;line-height:1.7;margin-bottom:10px}
+.desc{white-space:pre-wrap;word-break:break-word;margin:10px 0 14px;line-height:1.5}
+.seller{padding:12px;background:#f5f5f5;border-radius:12px;margin-bottom:12px}
+.actions{display:flex;flex-direction:column;gap:10px}
+
+.empty{grid-column:1/-1;text-align:center;padding:40px 15px;color:#777}
+.center{text-align:center;margin:18px 0}
+.profile-card{background:#fff;border-radius:15px;padding:18px;box-shadow:0 2px 8px #00000012;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.profile-card b{font-size:18px}
+.profile-card small{color:#777;display:block;margin-top:4px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom));background:#111;color:#fff;padding:12px 18px;border-radius:12px;z-index:100;max-width:90%;font-size:14px;text-align:center;box-shadow:0 5px 20px #0004}
+.toast.err{background:#b91c1c}
+</style>
+  <script src="/app-config.js"></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo" data-act="tab" data-tab="home">Elon <span>Taj</span></div>
+  <div class="search">🔍<input id="searchInput" type="search" placeholder="Ҷустуҷӯи эълон..." autocomplete="off"></div>
+</header>
+
+<main class="container" id="view"></main>
+
+<button class="add-btn" data-act="add" aria-label="Эълони нав">+</button>
+
+<nav class="bottom">
+  <button class="nav" data-act="tab" data-tab="home"><div>🏠</div>Асосӣ</button>
+  <button class="nav" data-act="tab" data-tab="favs"><div>❤️</div>Избранное</button>
+  <button class="nav" data-act="add"><div>➕</div>Эълон</button>
+  <button class="nav" data-act="tab" data-tab="profile"><div>👤</div>Профил</button>
+</nav>
+
+<div id="sheet" class="modal"><div class="modal-box" id="sheetBox"></div></div>
+
+<script>
+const CATS=[{n:'Ҳама',i:'🗂️'},{n:'Мошин',i:'🚗'},{n:'Телефон',i:'📱'},{n:'Хона',i:'🏠'},{n:'Кор',i:'💼'},{n:'Дигар',i:'📦'}];
+const CAT_ICON=Object.fromEntries(CATS.map(c=>[c.n,c.i]));
+const PAGE=24, MAX_IMG=5*1024*1024;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const state={tab:'home',cat:'Ҳама',q:'',ads:[],more:false,loading:false,error:null,
+  user:null,token:localStorage.getItem('elonTajToken'),favs:new Set()};
+let loadSeq=0;
+
+/* ---------- API ---------- */
+async function api(path,opts={}){
+  const headers={};
+  if(state.token)headers.Authorization='Bearer '+state.token;
+  let body=opts.body;
+  if(opts.json){headers['Content-Type']='application/json';body=JSON.stringify(opts.json)}
+  let res;
+  try{res=await fetch((window.ELON_TAJ_API_BASE||'')+'/api'+path,{method:opts.method||'GET',headers,body})}
+  catch{throw new Error('Бо сервер пайваст шуда натавонист')}
+  const data=await res.json().catch(()=>({}));
+  if(res.status===401&&state.token&&!path.startsWith('/login')){setSession(null,null)}
+  if(!res.ok)throw new Error(data.error||'Хатогӣ рух дод');
+  return data;
+}
+function setSession(token,user){
+  state.token=token;state.user=user;state.favs=new Set();
+  token?localStorage.setItem('elonTajToken',token):localStorage.removeItem('elonTajToken');
+}
+async function restoreSession(){
+  if(!state.token)return;
+  try{
+    state.user=(await api('/me')).user;
+    state.favs=new Set(await api('/favorites/ids'));
+  }catch{}
+}
+
+/* ---------- Ёрирасонҳо ---------- */
+function toast(msg,err){
+  const t=document.createElement('div');
+  t.className='toast'+(err?' err':'');t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3200);
+}
+const price=n=>Number(n)===0?'Ройгон':Number(n).toLocaleString('ru-RU')+' сомонӣ';
+function ago(s){
+  const t=new Date(String(s).replace(' ','T')+'Z');
+  const d=Math.floor((Date.now()-t)/864e5);
+  if(isNaN(d))return'';
+  if(d<=0)return'Имрӯз';if(d===1)return'Дирӯз';
+  return d<30?d+' рӯз пеш':t.toLocaleDateString('ru-RU');
+}
+function fmtPhone(d){
+  d=String(d);
+  return d.length===12&&d.startsWith('992')?`+992 ${d.slice(3,5)} ${d.slice(5,8)} ${d.slice(8,10)} ${d.slice(10)}`:'+'+d;
+}
+function img(ad,cls){
+  return ad.image?`<img ${cls?`class="${cls}" `:''}src="${esc((window.ELON_TAJ_API_BASE||'')+ad.image)}" loading="lazy" alt="">`
+    :`<div class="noimg ${cls||''}">${CAT_ICON[ad.category]||'📦'}</div>`;
+}
+async function shrink(file,max=1280){
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type))return file;
+  try{
+    const bmp=await createImageBitmap(file);
+    const k=Math.min(1,max/Math.max(bmp.width,bmp.height));
+    const c=document.createElement('canvas');
+    c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+    x.drawImage(bmp,0,0,c.width,c.height);
+    const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.82));
+    return blob&&blob.size<file.size?new File([blob],'photo.jpg',{type:'image/jpeg'}):file;
+  }catch{return file}
+}
+
+/* ---------- Sheet ---------- */
+function openSheet(html){$('#sheetBox').innerHTML=html;$('#sheet').classList.add('open');document.body.style.overflow='hidden'}
+function closeSheet(){$('#sheet').classList.remove('open');document.body.style.overflow='';$('#sheetBox').innerHTML=''}
+
+/* ---------- Корт ---------- */
+function card(ad,mine){
+  const btn=mine?`<button class="heart" data-act="del" data-id="${ad.id}" aria-label="Нест кардан">🗑️</button>`
+    :`<button class="heart" data-act="fav" data-id="${ad.id}" aria-label="Избранное">${state.favs.has(ad.id)?'❤️':'♡'}</button>`;
+  return `<article class="card" data-act="open" data-id="${ad.id}">${btn}${img(ad)}
+    <div class="card-info"><div class="card-title">${esc(ad.title)}</div>
+    <div class="price">${esc(price(ad.price))}</div>
+    <div class="location">📍 ${esc(ad.location)} · ${esc(ago(ad.created_at))}</div></div></article>`;
+}
+
+/* ---------- Намоишҳо ---------- */
+function render(){
+  document.querySelectorAll('.nav[data-tab]').forEach(n=>n.classList.toggle('active',n.dataset.tab===state.tab));
+  ({home:viewHome,favs:viewFavs,profile:viewProfile})[state.tab]();
+  window.scrollTo(0,0);
+}
+function go(tab){state.tab=tab;render()}
+
+function gate(text,withRegister){
+  return `<div class="empty" style="grid-column:auto">🔒<br><br>${esc(text)}<div class="center">
+    <button class="btn" data-act="login">Ворид шудан</button>
+    ${withRegister?' <button class="btn alt" data-act="register">Сабти ном</button>':''}</div></div>`;
+}
+
+function viewHome(){
+  $('#view').innerHTML=`<div class="title">Категорияҳо</div><div class="categories" id="cats"></div>
+    <div class="title">${state.q?'Натиҷаҳо':'Эълонҳои нав'}</div><div class="ads" id="ads"></div><div class="center" id="moreBox"></div>`;
+  paintCats();loadAds();
+}
+function paintCats(){
+  const el=$('#cats');if(!el)return;
+  el.innerHTML=CATS.map(c=>`<button class="category ${c.n===state.cat?'active':''}" data-act="cat" data-cat="${c.n}">
+    <div class="icon">${c.i}</div><small>${c.n}</small></button>`).join('');
+}
+async function loadAds(reset=true){
+  if(reset){state.ads=[];state.more=false}
+  const seq=++loadSeq;state.loading=true;state.error=null;paintAds();
+  const p=new URLSearchParams({limit:PAGE,offset:state.ads.length});
+  if(state.q)p.set('q',state.q);
+  if(state.cat!=='Ҳама')p.set('category',state.cat);
+  try{
+    const items=await api('/ads?'+p);
+    if(seq!==loadSeq)return;
+    state.ads=state.ads.concat(items);state.more=items.length===PAGE;
+  }catch(e){if(seq!==loadSeq)return;state.error=e.message}
+  state.loading=false;paintAds();
+}
+function paintAds(){
+  const box=$('#ads');if(!box)return;
+  if(state.loading&&!state.ads.length)box.innerHTML='<div class="empty">Бор мешавад…</div>';
+  else if(state.error)box.innerHTML=`<div class="empty">😔<br><br>${esc(state.error)}<div class="center"><button class="btn" data-act="retry">Аз нав кӯшиш</button></div></div>`;
+  else if(!state.ads.length)box.innerHTML='<div class="empty">😔<br><br>Эълон ёфт нашуд</div>';
+  else box.innerHTML=state.ads.map(a=>card(a)).join('');
+  $('#moreBox').innerHTML=state.more&&!state.loading?'<button class="btn alt" data-act="more">Бештар</button>':'';
+}
+
+async function viewFavs(){
+  const v=$('#view');
+  if(!state.user){v.innerHTML=gate('Барои дидани эълонҳои интихобшуда ворид шавед.',true);return}
+  v.innerHTML='<div class="title">Избранное</div><div class="ads"><div class="empty">Бор мешавад…</div></div>';
+  try{
+    const list=await api('/favorites');
+    if(state.tab!=='favs')return;
+    v.innerHTML=`<div class="title">Избранное</div><div class="ads">${list.length?list.map(a=>card(a)).join(''):'<div class="empty">❤️<br><br>Ҳоло чизе интихоб нашудааст</div>'}</div>`;
+  }catch(e){if(state.tab==='favs')v.innerHTML=`<div class="empty">😔<br><br>${esc(e.message)}</div>`}
+}
+
+async function viewProfile(){
+  const v=$('#view');
+  if(!state.user){v.innerHTML=gate('Барои гузоштани эълон ва истифодаи профил ворид шавед ё сабти ном кунед.',true);return}
+  v.innerHTML=`<div class="profile-card"><div><b>${esc(state.user.name)}</b><small>${esc(fmtPhone(state.user.phone))}</small></div>
+    <button class="btn alt" data-act="logout">Баромад</button></div>
+    <div class="title">Эълонҳои ман</div><div class="ads"><div class="empty">Бор мешавад…</div></div>`;
+  try{
+    const list=await api('/my-ads');
+    if(state.tab!=='profile'||!state.user)return;
+    v.querySelector('.ads').innerHTML=list.length?list.map(a=>card(a,true)).join(''):'<div class="empty">📦<br><br>Шумо ҳоло эълон нагузоштаед</div>';
+  }catch(e){if(state.tab==='profile'&&state.user)v.querySelector('.ads').innerHTML=`<div class="empty">😔<br><br>${esc(e.message)}</div>`}
+}
+
+/* ---------- Эълон: тафсилот ---------- */
+async function openAd(id){
+  openSheet('<button class="close" data-act="close">×</button><div class="empty">Бор мешавад…</div>');
+  try{
+    const ad=await api('/ads/'+id);
+    if(!$('#sheet').classList.contains('open'))return;
+    const mine=state.user&&state.user.id===ad.user_id;
+    $('#sheetBox').innerHTML=`<div class="detail"><button class="close" data-act="close">×</button>
+      ${img(ad,'detail-img')}
+      <h2>${esc(ad.title)}</h2><div class="price">${esc(price(ad.price))}</div>
+      <div class="meta">📍 ${esc(ad.location)}<br>🏷️ ${esc(ad.category)}<br>🕒 ${esc(ago(ad.created_at))}</div>
+      ${ad.description?`<div class="desc">${esc(ad.description)}</div>`:''}
+      <div class="seller">👤 ${esc(ad.seller_name)}</div>
+      <div class="actions"><a class="submit" href="tel:+${esc(ad.seller_phone)}">📞 ${esc(fmtPhone(ad.seller_phone))}</a>
+      ${mine?`<button class="btn danger" data-act="del" data-id="${ad.id}">Нест кардани эълон</button>`:''}</div></div>`;
+  }catch(e){closeSheet();toast(e.message,true)}
+}
+async function delAd(id){
+  if(!confirm('Ин эълон нест карда шавад?'))return;
+  try{await api('/ads/'+id,{method:'DELETE'});closeSheet();toast('Эълон нест карда шуд');render()}
+  catch(e){toast(e.message,true)}
+}
+async function toggleFav(id){
+  if(!state.user)return openAuth('login','Барои илова ба избранное ворид шавед');
+  try{
+    const {favorite}=await api('/favorites/'+id,{method:'POST'});
+    favorite?state.favs.add(id):state.favs.delete(id);
+    if(state.tab==='favs')return viewFavs();
+    document.querySelectorAll(`[data-act="fav"][data-id="${id}"]`).forEach(b=>b.textContent=favorite?'❤️':'♡');
+  }catch(e){toast(e.message,true)}
+}
+
+/* ---------- Воридшавӣ / сабт ---------- */
+function openAuth(mode='login',note=''){
+  const reg=mode==='register';
+  openSheet(`<button class="close" data-act="close">×</button><h2>${reg?'Сабти ном':'Воридшавӣ'}</h2>
+    ${note?`<div class="note">${esc(note)}</div>`:''}
+    <form class="form" id="authForm" data-mode="${mode}">
+      ${reg?'<input name="name" placeholder="Номи шумо" required minlength="2" maxlength="50" autocomplete="name">':''}
+      <input name="phone" type="tel" placeholder="Рақами телефон (масалан 927 12 34 56)" required autocomplete="tel">
+      <input name="password" type="password" placeholder="Парол (камаш 6 аломат)" required minlength="6" maxlength="72" autocomplete="${reg?'new-password':'current-password'}">
+      <button class="submit" type="submit">${reg?'Сабт шудан':'Ворид шудан'}</button>
+    </form>
+    <p class="switch">${reg?'Аккаунт доред?':'Аккаунт надоред?'} <button type="button" class="link" data-act="${reg?'login':'register'}">${reg?'Ворид шавед':'Сабт шавед'}</button></p>`);
+}
+async function submitAuth(form){
+  const btn=form.querySelector('.submit');btn.disabled=true;
+  try{
+    const r=await api(form.dataset.mode==='register'?'/register':'/login',{method:'POST',json:Object.fromEntries(new FormData(form))});
+    setSession(r.token,r.user);
+    state.favs=new Set(await api('/favorites/ids'));
+    closeSheet();toast('Хуш омадед, '+r.user.name+'!');render();
+  }catch(e){toast(e.message,true);btn.disabled=false}
+}
+
+/* ---------- Эълони нав ---------- */
+function openAdd(){
+  if(!state.user)return openAuth('login','Барои гузоштани эълон аввал ворид шавед');
+  openSheet(`<button class="close" data-act="close">×</button><h2>Эълони нав</h2>
+    <form class="form" id="adForm">
+      <input name="title" placeholder="Номи мол" required minlength="3" maxlength="100">
+      <input name="price" type="number" inputmode="numeric" min="0" max="1000000000000" step="1" placeholder="Нарх (сомонӣ), 0 = ройгон" required>
+      <select name="category" required><option value="">Категорияро интихоб кунед</option>
+        ${CATS.slice(1).map(c=>`<option>${c.n}</option>`).join('')}</select>
+      <input name="location" placeholder="Шаҳр / ноҳия" required minlength="2" maxlength="80">
+      <input id="adImage" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+      <img id="preview" class="preview" alt="">
+      <textarea name="description" maxlength="2000" placeholder="Тавсифи мол..."></textarea>
+      <button class="submit" type="submit">Гузоштани эълон</button>
+    </form>`);
+}
+async function submitAd(form){
+  const btn=form.querySelector('.submit');btn.disabled=true;btn.textContent='Фиристода мешавад…';
+  try{
+    const fd=new FormData();
+    for(const k of['title','price','category','location','description'])fd.append(k,form.elements[k].value);
+    const file=form.elements.image.files[0];
+    if(file){
+      const s=await shrink(file);
+      if(s.size>MAX_IMG)throw new Error('Расм аз 5 МБ зиёд аст');
+      fd.append('image',s,s.name||'photo.jpg');
+    }
+    await api('/ads',{method:'POST',body:fd});
+    closeSheet();toast('✅ Эълон гузошта шуд!');
+    state.cat='Ҳама';state.q='';$('#searchInput').value='';go('home');
+  }catch(e){toast(e.message,true);btn.disabled=false;btn.textContent='Гузоштани эълон'}
+}
+
+/* ---------- Рӯйдодҳо ---------- */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');
+  if(!el){if(e.target.id==='sheet')closeSheet();return}
+  const id=Number(el.dataset.id);
+  switch(el.dataset.act){
+    case'fav':e.stopPropagation();return toggleFav(id);
+    case'del':e.stopPropagation();return delAd(id);
+    case'open':return openAd(id);
+    case'close':return closeSheet();
+    case'tab':return go(el.dataset.tab);
+    case'cat':state.cat=el.dataset.cat;if(state.tab!=='home')return go('home');paintCats();return loadAds();
+    case'more':return loadAds(false);
+    case'retry':return loadAds();
+    case'add':return openAdd();
+    case'login':return openAuth('login');
+    case'register':return openAuth('register');
+    case'logout':setSession(null,null);toast('Шумо баромадед');return render();
+  }
+});
+document.addEventListener('submit',e=>{
+  e.preventDefault();
+  if(e.target.id==='authForm')submitAuth(e.target);
+  else if(e.target.id==='adForm')submitAd(e.target);
+});
+document.addEventListener('change',e=>{
+  if(e.target.id!=='adImage')return;
+  const p=$('#preview'),f=e.target.files[0];
+  if(f){p.src=URL.createObjectURL(f);p.style.display='block'}else p.style.display='none';
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+let timer;
+$('#searchInput').addEventListener('input',e=>{
+  clearTimeout(timer);
+  timer=setTimeout(()=>{
+    state.q=e.target.value.trim();
+    state.tab='home';render();
+  },300);
+});
+
+/* ---------- Оғоз ---------- */
+restoreSession().then(render);
+</script>
+</body>
+</html>

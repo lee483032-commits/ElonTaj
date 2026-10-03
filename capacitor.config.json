@@ -1,0 +1,9 @@
+{
+  "appId": "com.elontaj.app",
+  "appName": "Elon Taj",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": false
+  }
+}
