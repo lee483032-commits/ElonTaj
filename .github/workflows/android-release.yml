@@ -18,6 +18,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
       - name: Install dependencies and create Android project
         run: |
           npm install
@@ -50,3 +52,4 @@ jobs:
           path: ${{ runner.temp }}/ElonTaj.apk
           if-no-files-found: error
           retention-days: 14
+
